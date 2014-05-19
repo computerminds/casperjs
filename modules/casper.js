@@ -2614,3 +2614,25 @@ function createPage(casper) {
     casper.emit('page.created', page);
     return page;
 }
+
+/**
+ * Provide the ability to create a new page object after the page is closed
+ * @returns {page|*}
+ */
+Casper.prototype.newPage = function newPage() {
+    "use strict";
+    this.echo("The raw casper file is being run. NEw Page!");
+    this.checkStarted();
+    //Close the existing page object. Does not harm anything even if close() is called twice
+    this.page.close();
+    //copied from casper.start()
+    this.page = this.mainPage = createPage(this);
+    this.page.settings = utils.mergeObjects(this.page.settings, this.options.pageSettings);
+    if (utils.isClipRect(this.options.clipRect)) {
+      this.page.clipRect = this.options.clipRect;
+    }
+    if (utils.isObject(this.options.viewportSize)) {
+      this.page.viewportSize = this.options.viewportSize;
+    }
+    return this.page;
+};
